@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import os
-from typing import Dict, Iterable, List, Optional
+from typing import Dict, List, Optional, Tuple
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -86,6 +86,13 @@ def plot_reconstructions(model, dataset, n: int = 8,
     return _savefig(fig, filename)
 
 
+def _hide_ticks(ax) -> None:
+    """Strip ticks/spines so imshow is clean, but keep ylabel/title visible."""
+    ax.set_xticks([]); ax.set_yticks([])
+    for spine in ax.spines.values():
+        spine.set_visible(False)
+
+
 def plot_reconstructions_grid(
     models: Dict[str, tf.keras.Model],
     datasets: Dict[str, tf.data.Dataset],
@@ -101,10 +108,12 @@ def plot_reconstructions_grid(
         x = _take_batch(datasets[cls], n)
         x_hat = models[cls](x, training=False).numpy()
         for i in range(n):
-            axes[2 * r, i].imshow(x[i, :, :, 0], cmap="gray"); axes[2 * r, i].axis("off")
-            axes[2 * r + 1, i].imshow(x_hat[i, :, :, 0], cmap="gray"); axes[2 * r + 1, i].axis("off")
-        axes[2 * r, 0].set_ylabel(f"{cls}\norig", fontsize=8)
-        axes[2 * r + 1, 0].set_ylabel("recon", fontsize=8)
+            axes[2 * r, i].imshow(x[i, :, :, 0], cmap="gray")
+            axes[2 * r + 1, i].imshow(x_hat[i, :, :, 0], cmap="gray")
+            _hide_ticks(axes[2 * r, i])
+            _hide_ticks(axes[2 * r + 1, i])
+        axes[2 * r, 0].set_ylabel(f"{cls}\norig", fontsize=8, rotation=0, ha="right", va="center")
+        axes[2 * r + 1, 0].set_ylabel("recon", fontsize=8, rotation=0, ha="right", va="center")
     fig.suptitle(title, fontsize=11)
     fig.tight_layout()
     return _savefig(fig, filename)
@@ -114,7 +123,7 @@ def plot_reconstructions_grid(
 # Latent space
 # --------------------------------------------------------------------------- #
 
-def _collect_latents(model, labeled_dataset) -> (np.ndarray, np.ndarray):
+def _collect_latents(model, labeled_dataset) -> Tuple[np.ndarray, np.ndarray]:
     all_z: List[np.ndarray] = []
     all_y: List[np.ndarray] = []
     for x, y in labeled_dataset:
@@ -214,12 +223,14 @@ def plot_denoising(
     x_hat = model(x_noisy, training=False).numpy()
     fig, axes = plt.subplots(3, n, figsize=(1.6 * n, 4.8))
     for i in range(n):
-        axes[0, i].imshow(x[i, :, :, 0], cmap="gray"); axes[0, i].axis("off")
-        axes[1, i].imshow(x_noisy[i, :, :, 0], cmap="gray"); axes[1, i].axis("off")
-        axes[2, i].imshow(x_hat[i, :, :, 0], cmap="gray"); axes[2, i].axis("off")
-    axes[0, 0].set_ylabel("clean", fontsize=9)
-    axes[1, 0].set_ylabel(f"noisy σ={sigma}", fontsize=9)
-    axes[2, 0].set_ylabel("recon", fontsize=9)
+        axes[0, i].imshow(x[i, :, :, 0], cmap="gray")
+        axes[1, i].imshow(x_noisy[i, :, :, 0], cmap="gray")
+        axes[2, i].imshow(x_hat[i, :, :, 0], cmap="gray")
+        for row in range(3):
+            _hide_ticks(axes[row, i])
+    axes[0, 0].set_ylabel("clean", fontsize=9, rotation=0, ha="right", va="center")
+    axes[1, 0].set_ylabel(f"noisy σ={sigma}", fontsize=9, rotation=0, ha="right", va="center")
+    axes[2, 0].set_ylabel("recon", fontsize=9, rotation=0, ha="right", va="center")
     fig.suptitle(title or f"Denoising at σ={sigma}", fontsize=11)
     return _savefig(fig, filename or f"denoising_sigma{sigma}.png")
 
@@ -234,12 +245,15 @@ def plot_class_samples(class_to_ds: Dict[str, tf.data.Dataset],
     classes = list(class_to_ds.keys())
     fig, axes = plt.subplots(len(classes), n_per_class,
                              figsize=(1.3 * n_per_class, 1.3 * len(classes)))
+    if len(classes) == 1:
+        axes = np.array([axes])
     for r, c in enumerate(classes):
         x = _take_batch(class_to_ds[c], n_per_class)
         for i in range(n_per_class):
-            ax = axes[r, i] if len(classes) > 1 else axes[i]
-            ax.imshow(x[i, :, :, 0], cmap="gray"); ax.axis("off")
-        (axes[r, 0] if len(classes) > 1 else axes[0]).set_ylabel(c, fontsize=9)
+            ax = axes[r, i]
+            ax.imshow(x[i, :, :, 0], cmap="gray")
+            _hide_ticks(ax)
+        axes[r, 0].set_ylabel(c, fontsize=9, rotation=0, ha="right", va="center")
     fig.suptitle("Medical MNIST samples", fontsize=11)
     fig.tight_layout()
     return _savefig(fig, filename)

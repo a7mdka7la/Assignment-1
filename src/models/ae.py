@@ -2,8 +2,6 @@
 
 from __future__ import annotations
 
-from typing import Tuple
-
 import tensorflow as tf
 from tensorflow.keras import Model, layers
 
@@ -83,6 +81,7 @@ def make_autoencoder(
 ) -> AutoEncoder:
     model = AutoEncoder(latent_dim=latent_dim)
     model.compile(optimizer=tf.keras.optimizers.Adam(learning_rate))
-    # Build so summary() works and weights exist for checkpoint callbacks.
-    model.build((None, IMG_SIZE, IMG_SIZE, NUM_CHANNELS))
+    # Subclassed models don't always materialize weights from build(input_shape);
+    # a throwaway forward pass guarantees variables exist before checkpointing.
+    model(tf.zeros((1, IMG_SIZE, IMG_SIZE, NUM_CHANNELS)))
     return model

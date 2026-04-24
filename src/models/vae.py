@@ -140,5 +140,6 @@ def make_vae(
 ) -> VAE:
     model = VAE(latent_dim=latent_dim)
     model.compile(optimizer=tf.keras.optimizers.Adam(learning_rate))
-    model.build((None, IMG_SIZE, IMG_SIZE, NUM_CHANNELS))
+    # Force weight materialization so ModelCheckpoint has something to save.
+    model(tf.zeros((1, IMG_SIZE, IMG_SIZE, NUM_CHANNELS)))
     return model

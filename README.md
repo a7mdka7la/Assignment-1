@@ -63,6 +63,31 @@ jupyter notebook notebook.ipynb
 - **`tf.data` pipeline** caches decoded images in memory and prefetches — Medical MNIST easily fits in RAM at 64×64 grayscale.
 - **Cross-class latent viz uses the global models.** Per-class encoders each have their own unaligned 16-D space; overlaying them would be meaningless.
 
+## Building the report
+
+`report/report.tex` references figures at `../figures/...`, so compile from inside `report/`:
+
+```bash
+cd report
+pdflatex report.tex && pdflatex report.tex   # second pass for references
+```
+
+Or compile from the repo root with a path override:
+
+```bash
+pdflatex -output-directory=report report/report.tex
+```
+
+## Smoke test before a real training run
+
+To verify the pipeline end-to-end (models build, checkpoints save/reload, every viz helper renders) without needing a GPU or the dataset:
+
+```bash
+python -m scripts.smoke
+```
+
+Takes under a minute on CPU with TensorFlow installed.
+
 ## Deliverables map
 
 | Deliverable | Location |
