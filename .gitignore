@@ -1,0 +1,17 @@
+__pycache__/
+*.pyc
+*.pyo
+.ipynb_checkpoints/
+.DS_Store
+.env
+*.zip
+medical_mnist/
+checkpoints/*.h5
+checkpoints/*.weights.h5
+!checkpoints/.gitkeep
+figures/*.png
+!figures/.gitkeep
+report/*.aux
+report/*.log
+report/*.out
+report/*.synctex.gz
