@@ -37,8 +37,7 @@ Representation learning on **Medical MNIST** with an **Autoencoder** and a
 
 1. Upload your `kaggle.json` (from Kaggle → Account → Create New API Token) to Google Drive at `MyDrive/kaggle/kaggle.json`.
 2. Open `notebook.ipynb` in Colab.
-3. In the "Clone the repo" cell, replace `<user>` in `REPO_URL` with your GitHub username.
-4. Run all cells. The notebook:
+3. Run all cells. The notebook:
    - Mounts Drive.
    - Clones this repo into `/content/dsai490-assignment1`.
    - Installs requirements.
