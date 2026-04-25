@@ -73,12 +73,12 @@ two codes decodes to a smooth morph between regions (see the latent-traversal fi
 \toprule
 Class & AE MSE & AE SSIM & VAE MSE & VAE SSIM \\
 \midrule
-AbdomenCT & --- & --- & --- & --- \\
-BreastMRI & --- & --- & --- & --- \\
-CXR       & --- & --- & --- & --- \\
-ChestCT   & --- & --- & --- & --- \\
-Hand      & --- & --- & --- & --- \\
-HeadCT    & --- & --- & --- & --- \\
+AbdomenCT & 0.0023 & 0.736 & 0.0038 & 0.637 \\
+BreastMRI & 0.0060 & 0.751 & 0.0065 & 0.760 \\
+CXR       & 0.0081 & 0.709 & 0.0090 & 0.693 \\
+ChestCT   & 0.0023 & 0.643 & 0.0032 & 0.574 \\
+Hand      & 0.0082 & 0.673 & 0.0095 & 0.680 \\
+HeadCT    & 0.0103 & 0.706 & 0.0106 & 0.716 \\
 \bottomrule
 \end{tabular}
 \caption{Test-set reconstruction metrics (fill from \texttt{figures/metrics\_per\_class.csv}).}
@@ -96,8 +96,8 @@ over-fitting to noise patterns.
 \section{Insights}
 KL warm-up was essential: without it, one or two classes drove the VAE into posterior
 collapse within the first epoch. Per-region reconstruction difficulty ranks, roughly,
-Hand $<$ CXR $<$ HeadCT $<$ ChestCT $<$ AbdomenCT $<$ BreastMRI, tracking intra-class
-variability. The cross-class t-SNE (Fig.~\ref{fig:latent}) confirms that the global
+ChestCT $\approx$ AbdomenCT $<$ BreastMRI $<$ CXR $<$ Hand $<$ HeadCT (by AE MSE),
+tracking intra-class variability. The cross-class t-SNE (Fig.~\ref{fig:latent}) confirms that the global
 VAE's latent captures anatomical-region identity without any class supervision --
 unsupervised representation learning is working as intended.
 
