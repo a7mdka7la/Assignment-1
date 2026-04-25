@@ -9,7 +9,6 @@ medical_mnist/
 checkpoints/*.h5
 checkpoints/*.weights.h5
 !checkpoints/.gitkeep
-figures/*.png
 !figures/.gitkeep
 report/*.aux
 report/*.log
